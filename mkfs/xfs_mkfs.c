@@ -39,6 +39,9 @@
  */
 #define WHACK_SIZE (128 * 1024)
 
+/* Default path for the mkfs.xfs configuration file */
+#define DEFAULT_CONFIG_PATH "/usr/share/xfs/mkfs.xfs.conf"
+
 /*
  * XXX: The configured block and sector sizes are defined as global variables so
  * that they don't need to be passed to getnum/cvtnum().
@@ -4428,7 +4431,21 @@ main(
 	 * the options from this file parsed, we can then proceed with parameter
 	 * and bounds checking and making the filesystem.
 	 */
-	cfgfile_parse(&cli);
+	fprintf(stderr, _("Test Sparks 1\n"));
+	if (cli.cfgfile == NULL) {
+		fprintf(stderr, _("Test Sparks 2\n"));
+		/* No user config file specified, try default config */
+		FILE *default_config_file = fopen(DEFAULT_CONFIG_PATH, "r");
+		if (default_config_file != NULL) {
+			fclose(default_config_file);
+			cli.cfgfile = DEFAULT_CONFIG_PATH;
+			cfgfile_parse(&cli);
+		}
+	} else {
+		/* User specified their own config file, use that */
+		fprintf(stderr, _("Test Sparks 3\n"));
+		cfgfile_parse(&cli);
+	}
 
 	protostring = setup_proto(cli.protofile);
 
